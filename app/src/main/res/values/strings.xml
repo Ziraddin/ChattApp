@@ -3,4 +3,5 @@
     <string name="default_web_client_id">109166611158-u1si13eqskj8o1h9no2u1bck4blmjcec.apps.googleusercontent.com</string>
     <string name="your_web_client_id">109166611158-apahlst9po00qlqfeq6h5va4ffgavos6.apps.googleusercontent.com</string>
     <string name="search">Search...</string>
+    <string name="write">Write</string>
 </resources>

@@ -9,9 +9,10 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.ktx.auth
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.zireddinismayilov.chattapp.databinding.ActivityGoogleSignInBinding
 
@@ -19,6 +20,7 @@ class GoogleSignIn : AppCompatActivity() {
     private lateinit var auth: FirebaseAuth
     private lateinit var binding: ActivityGoogleSignInBinding
     private lateinit var googleSignInClient: GoogleSignInClient
+    private lateinit var db: FirebaseFirestore
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -31,6 +33,7 @@ class GoogleSignIn : AppCompatActivity() {
         googleSignInClient = GoogleSignIn.getClient(this, gso)
 
         auth = Firebase.auth
+        db = Firebase.firestore
 
         setContentView(binding.root)
 
@@ -71,6 +74,17 @@ class GoogleSignIn : AppCompatActivity() {
                 if (task.isSuccessful) {
                     Log.d(TAG, "signInWithCredential:success")
                     val user = auth.currentUser
+                    val userData = User(
+                        user?.displayName.toString(), user?.photoUrl.toString(),
+                        user?.uid.toString()
+                    )
+
+                    db.collection("users").add(userData).addOnSuccessListener { documentReference ->
+                        Log.d(TAG, "DocumentSnapshot added with ID: ${documentReference.id}")
+                    }.addOnFailureListener { e ->
+                        Log.w(TAG, "Error adding document", e)
+                    }
+
                     startActivity(Intent(this@GoogleSignIn, MainActivity::class.java))
                     finish()
                 } else {
@@ -85,7 +99,7 @@ class GoogleSignIn : AppCompatActivity() {
     }
 
     companion object {
-        private const val TAG = "GoogleActivity"
+        private const val TAG = "GoogleSignIn"
         private const val RC_SIGN_IN = 9001
     }
 }
